@@ -1,5 +1,5 @@
-[![build](https://github.com/haimgel/display-switch/workflows/build/badge.svg?branch=master)](https://github.com/haimgel/display-switch/actions)
-[![GitHub license](https://img.shields.io/github/license/haimgel/display-switch)](https://github.com/haimgel/display-switch/blob/master/LICENSE)
+[![build](https://github.com/haimgel/display-switch/workflows/build/badge.svg?branch=master)](https://github.com/haimgel/display-switch-keycombo/actions)
+[![GitHub license](https://img.shields.io/github/license/haimgel/display-switch)](https://github.com/haimgel/display-switch-keycombo/blob/master/LICENSE)
 
 # Turn a $30 USB switch into a full-featured KVM
 
@@ -21,9 +21,9 @@ The app should function on MacOS (Intel Macs only), Windows, and Linux.
 
 The configuration is pretty similar on all platforms:
 
-On MacOS: the configuration file is expected in `~/Library/Preferences/display-switch.ini`
-On Windows: the configuration file is expected in `%APPDATA%\display-switch\display-switch.ini`
-On Linux: the configuration file is expected in `$XDG_CONFIG_HOME/display-switch/display-switch.ini` or `~/.config/display-switch/display-switch.ini`
+On MacOS: the configuration file is expected in `~/Library/Preferences/display-switch-keycombo.ini`
+On Windows: the configuration file is expected in `%APPDATA%\display-switch-keycombo\display-switch-keycombo.ini`
+On Linux: the configuration file is expected in `$XDG_CONFIG_HOME/display-switch-keycombo/display-switch-keycombo.ini` or `~/.config/display-switch-keycombo/display-switch-keycombo.ini`
 
 Configuration file settings:
 
@@ -43,7 +43,7 @@ Note that the preferred way is to have this app installed on both computers. Swi
 other computer has put the monitors to sleep, they will switch immediately back to the original input.
 
 ### Different inputs on different monitors
-`display-switch` supports per-monitor configuration: add one or more monitor-specific configuration sections to set
+`display-switch-keycombo` supports per-monitor configuration: add one or more monitor-specific configuration sections to set
 monitor-specific inputs. For example:
 
 ```ini
@@ -64,7 +64,7 @@ on_usb_connect = "hdmi2"
 `on_usb_connect` and `on_usb_disconnect`, if defined, take precedence over global defaults.
 
 ### Running external commands
-`display-switch` supports running external commands upon connection or disconnection of USB devices. This configuration
+`display-switch-keycombo` supports running external commands upon connection or disconnection of USB devices. This configuration
 can be global (runs every time a configured USB device is connected or disconnected) or per-monitor (runs only when
 a given monitor is being switched):
 
@@ -82,7 +82,7 @@ on_usb_disconnect_execute = "'c:\\program files\\my app.exe' --parameter"
 ```
 
 Notes: 
-1. External applications are executed as the same user that started `display-switch`. 
+1. External applications are executed as the same user that started `display-switch-keycombo`. 
 2. This program supports splitting supplied configuration into application name and parameters, but no other shell features are supported.
 3. If the application path contains spaces, surround the full file path with single quotes.
 4. On Windows, escape the backslashes (replace \ with \\, see the example above).
@@ -122,10 +122,10 @@ The diff output will show which USB IDs are most relevant.
 
 ## Logging
 
-* On MacOS: the log file is written to `/Users/USERNAME/Library/Logs/display-switch/display-switch.log`
-* On Windows: the log file is written to `%LOCALAPPDATA%\display-switch\display-switch.log`
-* On Linux: The log file is written to `$XDG_DATA_HOME/display-switch/display-switch.log`
- or `~/.local/share/display-switch/display-switch.log`
+* On MacOS: the log file is written to `/Users/USERNAME/Library/Logs/display-switch-keycombo/display-switch-keycombo.log`
+* On Windows: the log file is written to `%LOCALAPPDATA%\display-switch-keycombo\display-switch-keycombo.log`
+* On Linux: The log file is written to `$XDG_DATA_HOME/display-switch-keycombo/display-switch-keycombo.log`
+ or `~/.local/share/display-switch-keycombo/display-switch-keycombo.log`
 
 ## Building from source
 
@@ -146,22 +146,22 @@ The diff output will show which USB IDs are most relevant.
 
 ### Windows
 
-Copy `display_switch.exe` from `target\release` (where it was built in the previous step) to 
+Copy `display_switch_keycombo.exe` from `target\release` (where it was built in the previous step) to 
 `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`.
 
 ### MacOS
 
 ```bash
   # Get your INI file in order! (see above)
-  cp target/release/display_switch /usr/local/bin/
-  cp dev.haim.display-switch.daemon.plist ~/Library/LaunchAgents/
-  launchctl load ~/Library/LaunchAgents/dev.haim.display-switch.daemon.plist
+  cp target/release/display_switch_keycombo /usr/local/bin/
+  cp dev.haim.display-switch-keycombo.daemon.plist ~/Library/LaunchAgents/
+  launchctl load ~/Library/LaunchAgents/dev.haim.display-switch-keycombo.daemon.plist
 ```
 ### Linux
 Copy built executable:
 
 ```bash
-  cp target/release/display_switch /usr/local/bin/
+  cp target/release/display_switch_keycombo /usr/local/bin/
 ```
 Enable read/write access to i2c devices for users in `i2c` group. Run as root :
 
@@ -177,14 +177,14 @@ Then add your user to the i2c group :
 sudo usermod -aG i2c $(whoami)
 ```
 
-Create a systemd unit file in your user directory (`/home/$USER/.config/systemd/user/display-switch.service`) with contents
+Create a systemd unit file in your user directory (`/home/$USER/.config/systemd/user/display-switch-keycombo.service`) with contents
 
 ```
 [Unit]
 Description=Display switch via USB switch
 
 [Service]
-ExecStart=/usr/local/bin/display_switch
+ExecStart=/usr/local/bin/display_switch_keycombo
 Type=simple
 StandardOutput=journal
 Restart=always
@@ -193,11 +193,11 @@ Restart=always
 WantedBy=default.target
 ```
 
-Create the config file at `/home/$USER/.config/display-switch/display-switch.ini`.
+Create the config file at `/home/$USER/.config/display-switch-keycombo/display-switch-keycombo.ini`.
 Then enable the service with
 
 ```bash
 systemctl --user daemon-reload
-systemctl --user enable display-switch.service
-systemctl --user start display-switch.service
+systemctl --user enable display-switch-keycombo.service
+systemctl --user start display-switch-keycombo.service
 ```

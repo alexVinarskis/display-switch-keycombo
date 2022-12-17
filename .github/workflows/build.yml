@@ -41,12 +41,12 @@ jobs:
         run: cargo test
 
       - name: Run executable
-        run: ./target/release/display_switch --version
+        run: ./target/release/display_switch_keycombo --version
 
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ runner.os }}
           if-no-files-found: error
           path: |
-            target/release/display_switch
-            target/release/display_switch.exe
+            target/release/display_switch_keycombo
+            target/release/display_switch_keycombo.exe

@@ -93,7 +93,7 @@ impl Configuration {
         let config_file_name = Self::config_file_name()?;
         let builder = config::Config::builder()
             .add_source(config::File::from(config_file_name.clone()))
-            .add_source(config::Environment::with_prefix("DISPLAY_SWITCH"));
+            .add_source(config::Environment::with_prefix("DISPLAY_SWITCH_KEYCOMBO"));
 
         let config = builder.build()?.try_deserialize()?;
         info!("Configuration loaded ({:?}): {:?}", config_file_name, config);
@@ -114,11 +114,11 @@ impl Configuration {
         } else {
             dirs::config_dir()
                 .ok_or_else(|| anyhow!("Config directory not found"))?
-                .join("display-switch")
+                .join("display-switch-keycombo")
         };
         std::fs::create_dir_all(&config_dir)
             .with_context(|| format!("failed to create directory: {:?}", config_dir))?;
-        Ok(config_dir.join("display-switch.ini"))
+        Ok(config_dir.join("display-switch-keycombo.ini"))
     }
 
     pub fn log_file_name() -> Result<std::path::PathBuf> {
@@ -127,14 +127,14 @@ impl Configuration {
                 .ok_or_else(|| anyhow!("Home directory not found"))?
                 .join("Library")
                 .join("Logs")
-                .join("display-switch")
+                .join("display-switch-keycombo")
         } else {
             dirs::data_local_dir()
                 .ok_or_else(|| anyhow!("Data-local directory not found"))?
-                .join("display-switch")
+                .join("display-switch-keycombo")
         };
         std::fs::create_dir_all(&log_dir).with_context(|| format!("failed to create directory: {:?}", log_dir))?;
-        Ok(log_dir.join("display-switch.log"))
+        Ok(log_dir.join("display-switch-keycombo.log"))
     }
 
     pub fn configuration_for_monitor(&self, monitor_id: &str) -> InputSources {
@@ -176,7 +176,7 @@ mod tests {
     fn test_log_file_name() {
         let file_name = Configuration::log_file_name();
         assert!(file_name.is_ok());
-        assert!(file_name.unwrap().ends_with("display-switch.log"))
+        assert!(file_name.unwrap().ends_with("display-switch-keycombo.log"))
     }
 
     fn load_test_config(config_str: &str) -> Result<Configuration, ConfigError> {
