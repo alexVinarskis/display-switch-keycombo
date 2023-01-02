@@ -1,14 +1,16 @@
-[![build](https://github.com/haimgel/display-switch/workflows/build/badge.svg?branch=master)](https://github.com/haimgel/display-switch-keycombo/actions)
-[![GitHub license](https://img.shields.io/github/license/haimgel/display-switch)](https://github.com/haimgel/display-switch-keycombo/blob/master/LICENSE)
+[![build](https://github.com/alexVinarskis/display-switch-keycombo/workflows/build/badge.svg?branch=master)](https://github.com/alexVinarskis/display-switch-keycombo/actions)
+[![GitHub license](https://img.shields.io/github/license/haimgel/display-switch)](https://github.com/alexVinarskis/display-switch-keycombo/blob/master/LICENSE)
 
-# Turn a $30 USB switch into a full-featured KVM
+Forked from and inspired by [`haimgel/display-switch`](https://github.com/haimgel/display-switch)
 
-This utility watches for USB device connect/disconnect events and switches monitor inputs via DDC/CI. This turns
-a simple USB switch into a full-fledged KVM solution: press one button on your USB switch and all your monitors
-connect to a different input.
+# Automate (KVM) monitor switching with a key combination
+This utility allows to switch (mulitple) monitor inputs by pressing a key combination. Some monitors (eg. Dell U3419W) have built-in USB hub with multiple upstream ports, effectively making it a KVM switch without external switch button.
 
-It is supposed to be installed on all computers that could be connected to these monitors, since the app only switches
-monitors "one way" and relies on itself running on the other computers to switch it "the other way" as needed.
+Altough monitor vendors provide propriatary software to switch inputs, it is often not possible to use it on Linux/MacOS, or to switch multiple monitors at once, or is generally ugly/buggy/bloatware.
+
+This utility is efficient, cross-platform solution to switch up to 6 monitors at once, up to 4 different inputs per monitor with respective key combinations per input.
+
+Assuming keyboard/mouse are connected via monitor's USB hub to achieve full KVM capability, this tool is supposed to be installed on all computers that could be connected to these monitors, since once the app switches inputs to other PC, pressing combo to revert will be now executed on that target PC.
  
 ## Platforms supported
 
@@ -17,68 +19,69 @@ The app should function on MacOS (Intel Macs only), Windows, and Linux.
 **NOTE:** Display Switch is currently **not** working on M1 Macs: M1 series SoC support in `ddc-macos-rs` is planned but is not 
 [implemented yet](https://github.com/haimgel/ddc-macos-rs/issues/2).
 
+**NOTE:** Running on Linux requires additional packages, install via: `sudo apt install libxi-dev xorg-dev`
+
 ## Configuration
 
 The configuration is pretty similar on all platforms:
 
-On MacOS: the configuration file is expected in `~/Library/Preferences/display-switch-keycombo.ini`
-On Windows: the configuration file is expected in `%APPDATA%\display-switch-keycombo\display-switch-keycombo.ini`
+On MacOS: the configuration file is expected in `~/Library/Preferences/display-switch-keycombo.ini` \
+On Windows: the configuration file is expected in `%APPDATA%\display-switch-keycombo\display-switch-keycombo.ini` \
 On Linux: the configuration file is expected in `$XDG_CONFIG_HOME/display-switch-keycombo/display-switch-keycombo.ini` or `~/.config/display-switch-keycombo/display-switch-keycombo.ini`
 
 Configuration file settings:
 
 ```ini
-  usb_device = "1050:0407"
-  on_usb_connect = "Hdmi1"
-  on_usb_disconnect = "Hdmi2"
+combo_a = ShiftLeft ControlLeft KeyM
+combo_b = ShiftLeft ControlLeft Comma
+input_a = "DisplayPort1"
+input_b = "Hdmi2"
 ```
-
-`usb_device` is which USB device to watch (vendor id / device id in hex), and `on_usb_connect` is which monitor input
-to switch to, when this device is connected. Supported values are `Hdmi1`, `Hdmi2`, `DisplayPort1`, `DisplayPort2`, `Dvi1`, `Dvi2`, `Vga1`.
-If your monitor has an USB-C port, it's usually reported as `DisplayPort2`. Input can also be specified as a "raw"
-decimal or hexadecimal value: `on_usb_connect = 0x10`
-
-The optional `on_usb_disconnect` settings allows to switch in the other direction when the USB device is disconnected.
-Note that the preferred way is to have this app installed on both computers. Switching "away" is problematic: if the
-other computer has put the monitors to sleep, they will switch immediately back to the original input.
+Paramters are:
+* `combo_a` ... `combo_d` are space-separated key combinations to switch to respective input. Supported keys are listed in `KEYS.md` file
+* `input_a` ... `input_d` are which monitor input
+to switch to, when respective key combination is detected. Supported values are `Hdmi1`, `Hdmi2`, `DisplayPort1`, `DisplayPort2`, `Dvi1`, `Dvi2`, `Vga1`.
+If your monitor has an USB-C port, it's usually reported as `DisplayPort2`. Input can also be specified as a "raw" decimal or hexadecimal value: `on_usb_connect = 0x10`
+* `input_a_execute` ... `input_d_execute` are optional commands to run when respective key combination is detected. See below for details.
 
 ### Different inputs on different monitors
 `display-switch-keycombo` supports per-monitor configuration: add one or more monitor-specific configuration sections to set
 monitor-specific inputs. For example:
 
 ```ini
-on_usb_connect = "DisplayPort2"
-on_usb_disconnect = "Hdmi1"
+combo_a = ShiftLeft ControlLeft KeyM
+combo_b = ShiftLeft ControlLeft Comma
 
 [monitor1]
-monitor_id = "len"
-on_usb_connect = "DisplayPort1"
+monitor_id = "U3419W"
+input_a = "DisplayPort1"
+input_b = "Hdmi2"
 
 [monitor2]
-monitor_id = "dell"
-on_usb_connect = "hdmi2"
+monitor_id = "P2418D"
+input_a = "DisplayPort1"
+input_b = "Hdmi1"
 ```
 
-`monitor_id` specifies a case-insensitive substring to match against the monitor ID. For example, 'len' would match
-`LEN P27u-10 S/N 1144206897` monitor ID. If more than one section has a match, a first one will be used.
-`on_usb_connect` and `on_usb_disconnect`, if defined, take precedence over global defaults.
+`monitor_id` specifies a case-insensitive substring to match against the monitor ID. For example, 'U3419W' would match
+`DELL U3419W S/N 1144206897` monitor ID. If more than one section has a match, a first one will be used.
+`input_a` ... `input_d` (if defined) take precedence over global defaults.
 
 ### Running external commands
-`display-switch-keycombo` supports running external commands upon connection or disconnection of USB devices. This configuration
-can be global (runs every time a configured USB device is connected or disconnected) or per-monitor (runs only when
+`display-switch-keycombo` supports running external commands upon executing key combination. This configuration
+can be global (runs every time specified combo is pressed) or per-monitor (runs only when
 a given monitor is being switched):
 
 ```ini
-usb_device = "1050:0407"
-on_usb_connect = "Hdmi1"
-on_usb_disconnect = "DisplayPort2"
-on_usb_connect_execute = "echo connected"
-on_usb_disconnect_execute = "echo disconnected"
+input_a = "Hdmi1"
+input_b = "DisplayPort2"
+input_a_execute = "echo connected"
+input_b_execute = "echo disconnected"
 
 [monitor1]
 monitor_id="foobar"
-on_usb_connect_execute = "echo usb connected, monitor 'foobar' being switched"
-on_usb_disconnect_execute = "'c:\\program files\\my app.exe' --parameter"
+input_a_execute = "echo usb connected, monitor 'foobar' being switched"
+input_b_execute = "'c:\\program files\\my app.exe' --parameter"
 ```
 
 Notes: 
@@ -86,39 +89,6 @@ Notes:
 2. This program supports splitting supplied configuration into application name and parameters, but no other shell features are supported.
 3. If the application path contains spaces, surround the full file path with single quotes.
 4. On Windows, escape the backslashes (replace \ with \\, see the example above).
-
-### USB Device IDs
-
-#### Windows
-To locate the ID of your USB device ID on Windows:
-1. Open Device Manager
-2. Locate the USB device, view the properties
-3. Switch to the *Details* tab and select *Hardware IDs* in the Property dropdown
-4. You should see a value similar to `HID\VID_046D&PID_C52B&MI_00` (the exact values will differ) - the USB device ID is a combination of the *Vendor ID* and the *Product ID* - for example, in this case it would be `046D:C52B`
-
-#### MacOS
-To locate the ID of your USB device ID on MacOS, open a terminal and run the following:
-```bash
-brew install lsusb
-
-$ lsusb > a
-<switch the usb dock here>
-$ lsusb > b
-$ opendiff a b
-```
-In the command output, the highlighted lines show you which USB IDs are most relevant.
-
-#### Linux
-To locate the ID of your USB device on Linux, first install `lsusb`, which your Linux
-distro should have a package for. (On Debian, Ubuntu and RedHat, the package name is `usbutils`.)
-Then, in a terminal, run the following:
-```
-$ lsusb > a
-<switch the usb dock here>
-$ lsusb > b
-$ diff -u a b
-```
-The diff output will show which USB IDs are most relevant.
 
 ## Logging
 
@@ -181,7 +151,7 @@ Create a systemd unit file in your user directory (`/home/$USER/.config/systemd/
 
 ```
 [Unit]
-Description=Display switch via USB switch
+Description=Display switch via key combo
 
 [Service]
 ExecStart=/usr/local/bin/display_switch_keycombo

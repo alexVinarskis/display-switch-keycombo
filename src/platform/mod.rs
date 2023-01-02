@@ -3,20 +3,8 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 //
 
-#[cfg(target_os = "macos")]
-mod pnp_detect_libusb;
-#[cfg(target_os = "macos")]
-pub use pnp_detect_libusb::PnPDetectLibusb as PnPDetect;
-
-#[cfg(target_os = "linux")]
-mod pnp_detect_libusb;
-#[cfg(target_os = "linux")]
-pub use pnp_detect_libusb::PnPDetectLibusb as PnPDetect;
-
-#[cfg(target_os = "windows")]
-mod pnp_detect_windows;
-#[cfg(target_os = "windows")]
-pub use pnp_detect_windows::PnPDetectWindows as PnPDetect;
+mod key_detect;
+pub use key_detect::KeyDetect;
 
 mod wake_displays;
 pub use wake_displays::wake_displays;

@@ -19,7 +19,8 @@ mod display_control;
 mod input_source;
 mod logging;
 mod platform;
-mod usb;
+mod key_combination;
+mod key;
 
 /// On Windows, re-attach the console, if parent process has the console. This allows
 /// to see the log output when run from the command line.
