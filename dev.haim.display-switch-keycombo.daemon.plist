@@ -3,9 +3,9 @@
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>dev.haim.display-switch.daemon</string>
+        <string>dev.haim.display-switch-keycombo.daemon</string>
         <key>Program</key>
-        <string>/usr/local/bin/display_switch</string>
+        <string>/usr/local/bin/display_switch_keycombo</string>
         <key>RunAtLoad</key>
         <true/>
     </dict>

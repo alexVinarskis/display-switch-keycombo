@@ -1,11 +1,11 @@
 [package]
-name = "display_switch"
-version = "1.2.0"
-authors = ["Haim Gelfenbeyn <haim@g8n.me>"]
+name = "display_switch_keycombo"
+version = "0.9.0"
+authors = ["Haim Gelfenbeyn <haim@g8n.me>", "Alex Vinarskis"]
 edition = "2021"
 description = "An utility to watch for USB device connect/disconnect events and switch display inputs via DDC/CI"
 readme = "README.md"
-repository = "https://github.com/haimgel/display-switch/"
+repository = "https://github.com/alexVinarskis/display-switch-keycombo/"
 license = "MIT"
 
 [build-dependencies]
@@ -20,10 +20,9 @@ serde = { version = "^1.0", features = ["derive"] }
 anyhow = "^1.0"
 log = "^0.4"
 simplelog = "^0.12"
-ddc = "^0.2"
-rusb = "^0.9.1"
 shell-words = "^1"
 ddc-hi = "0.4.1"
+rdev = "0.5.2"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 ddc-macos = "^0.2"
