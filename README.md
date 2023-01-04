@@ -1,4 +1,4 @@
-[![build](https://github.com/alexVinarskis/display-switch-keycombo/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/alexVinarskis/display-switch-keycombo/actions/workflows/build.yml)
+[![build](https://github.com/alexVinarskis/display-switch-keycombo/workflows/build/badge.svg?branch=main)](https://github.com/alexVinarskis/display-switch-keycombo/actions)
 [![GitHub license](https://img.shields.io/github/license/haimgel/display-switch)](https://github.com/alexVinarskis/display-switch-keycombo/blob/master/LICENSE)
 
 Forked from and inspired by [`haimgel/display-switch`](https://github.com/haimgel/display-switch)
