@@ -1,0 +1,11 @@
+[Unit]
+Description=Display switch via key combo
+
+[Service]
+ExecStart=/usr/local/bin/display_switch_keycombo
+Type=simple
+StandardOutput=journal
+Restart=always
+
+[Install]
+WantedBy=default.target

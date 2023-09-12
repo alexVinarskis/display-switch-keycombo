@@ -54,3 +54,4 @@ jobs:
           path: |
             target/release/display_switch_keycombo
             target/release/display_switch_keycombo.exe
+            "*deb"

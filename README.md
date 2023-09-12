@@ -137,7 +137,7 @@ Enable read/write access to i2c devices for users in `i2c` group. Run as root :
 
 ```bash
 groupadd i2c
-echo 'KERNEL=="i2c-[0-9]*", GROUP="i2c"' >> /etc/udev/rules.d/10-local_i2c_group.rules
+echo 'KERNEL=="i2c-[0-9]*", GROUP="i2c"' | sudo tee -a /etc/udev/rules.d/10-local_i2c_group.rules
 udevadm control --reload-rules && udevadm trigger
 ```
 
